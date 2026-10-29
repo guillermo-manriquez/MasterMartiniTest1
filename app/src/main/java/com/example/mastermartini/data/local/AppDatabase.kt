@@ -18,6 +18,7 @@ import com.example.mastermartini.data.local.entity.QuoteItemEntity
 import com.example.mastermartini.data.local.entity.QuoteRequestEntity
 import com.example.mastermartini.data.local.entity.QuoteRequestItemEntity
 import com.example.mastermartini.data.local.entity.UserEntity
+import com.example.mastermartini.util.security.PasswordHasher
 
 @Database(
     entities = [
@@ -41,20 +42,32 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
         private const val DATABASE_NAME = "master_martini.db"
 
-        fun build(context: Context): AppDatabase =
+        fun build(context: Context, passwordHasher: PasswordHasher): AppDatabase =
             Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME)
-                .addCallback(SeedCallback)
+                .addCallback(SeedCallback(passwordHasher))
                 .build()
     }
 
     /**
-     * Inserts the catalog the first time the database file is created. It runs inside
-     * Room's open transaction, so the products exist before the first query returns.
+     * Inserts the catalog and the demo user the first time the database file is created.
+     * It runs inside Room's open transaction, so the data exists before the first query returns.
      */
-    private object SeedCallback : Callback() {
+    private class SeedCallback(private val passwordHasher: PasswordHasher) : Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             SeedData.products.forEach { product ->
                 db.insert("products", SQLiteDatabase.CONFLICT_IGNORE, product.toContentValues())
+            }
+            db.insert("users", SQLiteDatabase.CONFLICT_IGNORE, demoUserValues())
+        }
+
+        private fun demoUserValues(): ContentValues {
+            val hashed = passwordHasher.hash(SeedData.DEMO_PASSWORD)
+            return ContentValues().apply {
+                put("fullName", SeedData.DEMO_NAME)
+                put("email", SeedData.DEMO_EMAIL)
+                put("phone", SeedData.DEMO_PHONE)
+                put("passwordHash", hashed.hash)
+                put("salt", hashed.salt)
             }
         }
 

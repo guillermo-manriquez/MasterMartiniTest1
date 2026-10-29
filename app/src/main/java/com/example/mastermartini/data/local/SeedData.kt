@@ -13,6 +13,12 @@ import com.example.mastermartini.model.ProductCategory.RETAIL
  */
 object SeedData {
 
+    // Demo account for the evaluation (test credentials, also listed in the README).
+    const val DEMO_NAME = "Usuario Demo"
+    const val DEMO_EMAIL = "demo@mastermartini.cl"
+    const val DEMO_PHONE = "+56 9 1234 5678"
+    const val DEMO_PASSWORD = "Demo2026"
+
     val products = listOf(
         // Panadería y Pastelería
         ProductEntity(

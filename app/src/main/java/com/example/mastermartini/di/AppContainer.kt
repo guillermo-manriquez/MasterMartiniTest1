@@ -9,28 +9,37 @@ import com.example.mastermartini.data.repository.ProductRepository
 import com.example.mastermartini.data.repository.QuoteRepository
 import com.example.mastermartini.data.repository.RoomProductRepository
 import com.example.mastermartini.data.repository.RoomQuoteRepository
+import com.example.mastermartini.data.repository.RoomUserRepository
+import com.example.mastermartini.data.repository.UserRepository
 import com.example.mastermartini.data.session.DataStoreSessionManager
 import com.example.mastermartini.data.session.SessionManager
+import com.example.mastermartini.util.security.PasswordHasher
+import com.example.mastermartini.util.security.Pbkdf2PasswordHasher
 
 /**
  * Manual dependency injection: the single place where app-wide objects are built.
  * ViewModels get their dependencies from here through [appContainer] inside
  * `viewModelFactory { initializer { ... } }`, so screens never construct data classes.
- *
- * T7 adds the UserRepository once the PBKDF2 PasswordHasher exists.
  */
 interface AppContainer {
     val database: AppDatabase
     val sessionManager: SessionManager
+    val userRepository: UserRepository
     val productRepository: ProductRepository
     val quoteRepository: QuoteRepository
 }
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
 
-    override val database: AppDatabase by lazy { AppDatabase.build(context) }
+    private val passwordHasher: PasswordHasher by lazy { Pbkdf2PasswordHasher() }
+
+    override val database: AppDatabase by lazy { AppDatabase.build(context, passwordHasher) }
 
     override val sessionManager: SessionManager by lazy { DataStoreSessionManager(context) }
+
+    override val userRepository: UserRepository by lazy {
+        RoomUserRepository(database.userDao(), passwordHasher)
+    }
 
     override val productRepository: ProductRepository by lazy {
         RoomProductRepository(database.productDao(), database.favoriteDao())

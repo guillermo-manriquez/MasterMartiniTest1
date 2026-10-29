@@ -4,8 +4,11 @@ import com.example.mastermartini.data.local.dao.UserDao
 import com.example.mastermartini.data.local.entity.UserEntity
 import com.example.mastermartini.model.User
 import com.example.mastermartini.util.security.PasswordHasher
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 sealed interface RegisterResult {
     data class Success(val user: User) : RegisterResult
@@ -33,10 +36,12 @@ interface UserRepository {
 class RoomUserRepository(
     private val userDao: UserDao,
     private val passwordHasher: PasswordHasher,
+    // PBKDF2 is deliberately slow (~0.7 s on an emulator), so it must not run on the main thread
+    private val hashingDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : UserRepository {
 
     override suspend fun register(fullName: String, email: String, phone: String, password: String): RegisterResult {
-        val hashed = passwordHasher.hash(password)
+        val hashed = withContext(hashingDispatcher) { passwordHasher.hash(password) }
         val entity = UserEntity(
             fullName = fullName.trim(),
             email = email.normalizedEmail(),
@@ -50,7 +55,10 @@ class RoomUserRepository(
 
     override suspend fun login(email: String, password: String): LoginResult {
         val user = userDao.findByEmail(email.normalizedEmail())
-        return if (user != null && passwordHasher.verify(password, user.passwordHash, user.salt)) {
+        val matches = user != null && withContext(hashingDispatcher) {
+            passwordHasher.verify(password, user.passwordHash, user.salt)
+        }
+        return if (user != null && matches) {
             LoginResult.Success(user.toModel())
         } else {
             LoginResult.InvalidCredentials

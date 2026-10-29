@@ -38,6 +38,11 @@ android {
     }
 }
 
+ksp {
+    // Versioned Room schemas, needed to write migrations in later deliveries
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)

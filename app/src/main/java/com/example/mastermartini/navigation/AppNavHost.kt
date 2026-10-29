@@ -29,6 +29,7 @@ import com.example.mastermartini.ui.screens.PlaceholderScreen
 import com.example.mastermartini.ui.screens.auth.AuthGateScreen
 import com.example.mastermartini.ui.screens.auth.LoginScreen
 import com.example.mastermartini.ui.screens.auth.RegisterScreen
+import com.example.mastermartini.ui.screens.catalog.CatalogScreen
 
 private const val TRANSITION_MS = 300
 
@@ -89,14 +90,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
 
             // Main flow
             composable<Route.Catalog> {
-                PlaceholderScreen(
-                    title = stringResource(R.string.nav_catalog),
-                    actions = listOf(
-                        stringResource(R.string.placeholder_open_product) to {
-                            navController.navigate(Route.ProductDetail(productId = 1))
-                        },
-                    ),
-                )
+                CatalogScreen(onProductClick = { id -> navController.navigate(Route.ProductDetail(productId = id)) })
             }
             composable<Route.ProductDetail> { entry ->
                 val route = entry.toRoute<Route.ProductDetail>()

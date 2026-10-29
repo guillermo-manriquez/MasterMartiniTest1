@@ -29,9 +29,23 @@
     <string name="register_subtitle">Crea tu cuenta para guardar favoritos y cotizaciones</string>
     <string name="register_button">Crear cuenta</string>
 
-    <!-- Temporary placeholders, replaced screen by screen in T11–T16 -->
+    <!-- Catalog -->
+    <string name="catalog_search_label">Buscar por nombre o familia</string>
+    <string name="catalog_all">Todos</string>
+    <string name="catalog_empty_title">Sin resultados</string>
+    <string name="catalog_empty_message">No encontramos productos con esos filtros. Prueba con otra palabra o categoría.</string>
+    <string name="catalog_clear_filters">Limpiar filtros</string>
+    <string name="catalog_download">Descargar catálogo</string>
+    <string name="catalog_download_hint">Abre el catálogo completo en mastermartini.cl</string>
+    <string name="catalog_open_error">No hay una aplicación para abrir el enlace</string>
+    <string name="cd_clear_search">Borrar búsqueda</string>
+    <plurals name="catalog_count">
+        <item quantity="one">%d producto</item>
+        <item quantity="other">%d productos</item>
+    </plurals>
+
+    <!-- Temporary placeholders, replaced screen by screen in T12–T16 -->
     <string name="placeholder_message">Pantalla en construcción</string>
-    <string name="placeholder_open_product">Ver un producto</string>
     <string name="placeholder_logout">Cerrar sesión</string>
 
     <!-- Bottom navigation -->

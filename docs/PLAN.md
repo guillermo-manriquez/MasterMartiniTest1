@@ -203,7 +203,7 @@ Each task is one or more small commits with technical messages (`build:`, `feat(
 | T4 | Entities, DAOs, converters, `AppDatabase`, seed callback (18 products), schema export to `app/schemas` | T3 |
 | T5 | Repositories (interfaces + Room implementations), `SessionManager` | T4 |
 | T6 | `Validators`, `ValidationResult`, `FieldState` + `ValidatorsTest` | T1 |
-| T7 | `PasswordHasher` (PBKDF2) + `PasswordHasherTest`; seed the demo user (needs the hasher, moved here from T4) | T1, T4 |
+| T7 | `Pbkdf2PasswordHasher` implementing the `PasswordHasher` interface from T5 + `PasswordHasherTest`; wire `UserRepository` into `AppContainer`; seed the demo user (moved here from T4) | T1, T4, T5 |
 | T8 | `ValidatedTextField`, `DateField`, `LoadingButton`, `EmptyState`, `ErrorBanner` | T2, T6 |
 | T9 | Routes, `AppNavHost`, `BottomBar`, `AuthGate`, placeholder screens, transitions | T3, T5 |
 | T10 | Login + Register (ViewModels + screens; duplicate-email and generic login errors) + `RegisterViewModelTest` | T5, T7, T8, T9 |

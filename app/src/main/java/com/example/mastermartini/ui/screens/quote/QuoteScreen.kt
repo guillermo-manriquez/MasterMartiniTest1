@@ -1,5 +1,8 @@
 package com.example.mastermartini.ui.screens.quote
 
+import android.Manifest
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -22,6 +26,7 @@ import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Business
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.RemoveShoppingCart
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material3.AlertDialog
@@ -35,13 +40,24 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.error
@@ -60,10 +76,16 @@ import com.example.mastermartini.ui.components.DateField
 import com.example.mastermartini.ui.components.EmptyState
 import com.example.mastermartini.ui.components.ErrorBanner
 import com.example.mastermartini.ui.components.LoadingButton
+import com.example.mastermartini.ui.components.PermissionRationaleDialog
 import com.example.mastermartini.ui.components.ValidatedTextField
 import com.example.mastermartini.ui.theme.SuccessGreen
+import com.example.mastermartini.util.permissions.PermissionResult
+import com.example.mastermartini.util.permissions.openAppSettings
+import com.example.mastermartini.util.permissions.rememberPermissionRequester
+import com.example.mastermartini.viewmodel.LocationEvent
 import com.example.mastermartini.viewmodel.QuoteLine
 import com.example.mastermartini.viewmodel.QuoteViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,6 +96,62 @@ fun QuoteScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
     val next = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    var showLocationRationale by rememberSaveable { mutableStateOf(false) }
+
+    val showMessage: (Int, Int?, () -> Unit) -> Unit = { messageRes, actionRes, onAction ->
+        scope.launch {
+            snackbarHostState.currentSnackbarData?.dismiss()
+            val result = snackbarHostState.showSnackbar(
+                message = context.getString(messageRes),
+                actionLabel = actionRes?.let(context::getString),
+                duration = if (actionRes != null) SnackbarDuration.Long else SnackbarDuration.Short,
+            )
+            if (result == SnackbarResult.ActionPerformed) onAction()
+        }
+    }
+
+    // Location permission: granted -> fill address; declined once -> explain and offer retry;
+    // permanently declined -> only the app settings can enable it
+    val locationPermission = rememberPermissionRequester(
+        permissions = listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+    ) { result ->
+        when (result) {
+            PermissionResult.GRANTED -> viewModel.useCurrentLocation()
+            PermissionResult.SHOW_RATIONALE -> showLocationRationale = true
+            PermissionResult.PERMANENTLY_DENIED ->
+                showMessage(R.string.location_permanently_denied, R.string.action_open_settings) { context.openAppSettings() }
+        }
+    }
+
+    LaunchedEffect(viewModel) {
+        viewModel.locationEvents.collect { event ->
+            when (event) {
+                LocationEvent.COORDINATES_ONLY -> showMessage(R.string.location_coordinates_only, null) {}
+                LocationEvent.UNAVAILABLE -> showMessage(R.string.location_unavailable, null) {}
+                LocationEvent.LOCATION_DISABLED -> showMessage(R.string.location_disabled, R.string.location_enable) {
+                    context.startActivity(
+                        Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    )
+                }
+            }
+        }
+    }
+
+    if (showLocationRationale) {
+        PermissionRationaleDialog(
+            icon = Icons.Outlined.MyLocation,
+            title = stringResource(R.string.location_rationale_title),
+            message = stringResource(R.string.location_rationale_message),
+            onAllow = {
+                showLocationRationale = false
+                locationPermission.launchSystemDialog()
+            },
+            onDismiss = { showLocationRationale = false },
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -82,6 +160,7 @@ fun QuoteScreen(
                 windowInsets = WindowInsets(0),
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         contentWindowInsets = WindowInsets(0),
     ) { padding ->
         if (state.isLoading) {
@@ -175,6 +254,23 @@ fun QuoteScreen(
                 leadingIcon = Icons.Outlined.LocationOn,
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                extraTrailing = {
+                    // Spinner replaces the button while the location is being looked up
+                    if (state.isLocating) {
+                        CircularProgressIndicator(Modifier.padding(12.dp).size(24.dp), strokeWidth = 2.5.dp)
+                    } else {
+                        IconButton(onClick = {
+                            focusManager.clearFocus()
+                            locationPermission.request()
+                        }) {
+                            Icon(
+                                Icons.Outlined.MyLocation,
+                                contentDescription = stringResource(R.string.cd_use_location),
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                    }
+                },
             )
             LoadingButton(
                 text = stringResource(R.string.quote_submit),

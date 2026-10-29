@@ -13,10 +13,14 @@ import com.example.mastermartini.model.QuoteItem
 import com.example.mastermartini.model.QuoteRequestForm
 import com.example.mastermartini.model.QuoteRules
 import com.example.mastermartini.util.DisplayDateFormatter
+import com.example.mastermartini.util.location.LocationLookup
+import com.example.mastermartini.util.location.LocationProvider
 import com.example.mastermartini.util.validation.FieldState
 import com.example.mastermartini.util.validation.ValidationResult
 import com.example.mastermartini.util.validation.Validators
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +28,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
@@ -52,6 +57,14 @@ data class QuoteFormState(
     )
 }
 
+/** One-time messages about the location lookup, shown as snackbars. */
+enum class LocationEvent {
+    /** Address filled from coordinates only: the user should check and complete it. */
+    COORDINATES_ONLY,
+    LOCATION_DISABLED,
+    UNAVAILABLE,
+}
+
 data class QuoteUiState(
     val isLoading: Boolean = true,
     val lines: List<QuoteLine> = emptyList(),
@@ -60,6 +73,8 @@ data class QuoteUiState(
     val formError: String? = null,
     /** Set after a successful submit, to show the confirmation dialog. */
     val registeredRequestId: Long? = null,
+    /** True while the address is being filled from the device location. */
+    val isLocating: Boolean = false,
 ) {
     val isEmpty: Boolean get() = !isLoading && lines.isEmpty()
 }
@@ -68,6 +83,7 @@ data class QuoteUiState(
 class QuoteViewModel(
     private val quoteRepository: QuoteRepository,
     private val sessionManager: SessionManager,
+    private val locationProvider: LocationProvider,
     private val today: () -> LocalDate = LocalDate::now,
 ) : ViewModel() {
 
@@ -75,6 +91,10 @@ class QuoteViewModel(
     /** Quantity text typed by the user, per product; absent means "show the saved quantity". */
     private val quantityInputs = MutableStateFlow<Map<Long, FieldState>>(emptyMap())
     private val status = MutableStateFlow(SubmitStatus())
+    private val isLocating = MutableStateFlow(false)
+
+    private val _locationEvents = Channel<LocationEvent>(Channel.BUFFERED)
+    val locationEvents: Flow<LocationEvent> = _locationEvents.receiveAsFlow()
 
     private data class SubmitStatus(
         val isSubmitting: Boolean = false,
@@ -84,7 +104,7 @@ class QuoteViewModel(
 
     private val draft = sessionManager.userId.filterNotNull().flatMapLatest { quoteRepository.observeDraft(it) }
 
-    val uiState: StateFlow<QuoteUiState> = combine(draft, quantityInputs, form, status) { items, inputs, form, status ->
+    val uiState: StateFlow<QuoteUiState> = combine(draft, quantityInputs, form, status, isLocating) { items, inputs, form, status, locating ->
         QuoteUiState(
             isLoading = false,
             lines = items.map { item ->
@@ -95,6 +115,7 @@ class QuoteViewModel(
             // The "add a product" banner disappears as soon as the draft has items again
             formError = status.formError?.takeUnless { it == EMPTY_DRAFT && items.isNotEmpty() },
             registeredRequestId = status.registeredRequestId,
+            isLocating = locating,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), QuoteUiState())
 
@@ -156,6 +177,27 @@ class QuoteViewModel(
         it.copy(address = it.address.onValueChange(value, Validators::address), latitude = latitude, longitude = longitude)
     }
 
+    /**
+     * Fills the address from the device location. Called by the screen only after the
+     * location permission was granted (permissions need the Activity, so the UI asks for them).
+     */
+    fun useCurrentLocation() {
+        if (isLocating.value) return
+        isLocating.value = true
+        viewModelScope.launch {
+            when (val result = locationProvider.currentAddress()) {
+                is LocationLookup.Found -> {
+                    onAddressChange(result.address, result.latitude, result.longitude)
+                    onAddressFocusLost()
+                    if (!result.fromGeocoder) _locationEvents.send(LocationEvent.COORDINATES_ONLY)
+                }
+                LocationLookup.LocationDisabled -> _locationEvents.send(LocationEvent.LOCATION_DISABLED)
+                LocationLookup.NoPermission, LocationLookup.Unavailable -> _locationEvents.send(LocationEvent.UNAVAILABLE)
+            }
+            isLocating.value = false
+        }
+    }
+
     fun onBusinessNameFocusLost() = form.update { it.copy(businessName = it.businessName.touch()) }
     fun onRutFocusLost() = form.update { it.copy(rut = it.rut.touch()) }
     fun onDeliveryDateFocusLost() = form.update { it.copy(deliveryDateField = it.deliveryDateField.touch()) }
@@ -208,7 +250,7 @@ class QuoteViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val container = appContainer()
-                QuoteViewModel(container.quoteRepository, container.sessionManager)
+                QuoteViewModel(container.quoteRepository, container.sessionManager, container.locationProvider)
             }
         }
     }

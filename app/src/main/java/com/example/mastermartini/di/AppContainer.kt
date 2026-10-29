@@ -13,6 +13,8 @@ import com.example.mastermartini.data.repository.RoomUserRepository
 import com.example.mastermartini.data.repository.UserRepository
 import com.example.mastermartini.data.session.DataStoreSessionManager
 import com.example.mastermartini.data.session.SessionManager
+import com.example.mastermartini.util.location.AndroidLocationProvider
+import com.example.mastermartini.util.location.LocationProvider
 import com.example.mastermartini.util.security.PasswordHasher
 import com.example.mastermartini.util.security.Pbkdf2PasswordHasher
 
@@ -27,6 +29,7 @@ interface AppContainer {
     val userRepository: UserRepository
     val productRepository: ProductRepository
     val quoteRepository: QuoteRepository
+    val locationProvider: LocationProvider
 }
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
@@ -46,6 +49,8 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     override val quoteRepository: QuoteRepository by lazy { RoomQuoteRepository(database.quoteDao()) }
+
+    override val locationProvider: LocationProvider by lazy { AndroidLocationProvider(context) }
 }
 
 /** Resolves the [AppContainer] from a ViewModel factory's [CreationExtras]. */

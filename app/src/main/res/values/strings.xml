@@ -82,6 +82,18 @@
     <string name="cd_increase">Sumar una unidad de %1$s</string>
     <string name="cd_remove_item">Quitar %1$s de la cotización</string>
 
+    <!-- Location (quote address) -->
+    <string name="cd_use_location">Usar mi ubicación actual</string>
+    <string name="location_rationale_title">Usar tu ubicación</string>
+    <string name="location_rationale_message">Master Martini usa tu ubicación solo para completar la dirección de despacho. No se guarda ni se comparte. También puedes escribirla a mano.</string>
+    <string name="location_permanently_denied">El permiso de ubicación está desactivado</string>
+    <string name="location_disabled">Activa la ubicación del dispositivo</string>
+    <string name="location_enable">Activar</string>
+    <string name="location_unavailable">No pudimos obtener tu ubicación. Escribe la dirección.</string>
+    <string name="location_coordinates_only">Solo obtuvimos coordenadas: revisa y completa la dirección</string>
+    <string name="action_allow">Permitir</string>
+    <string name="action_not_now">Ahora no</string>
+
     <!-- Temporary placeholders, replaced screen by screen in T15–T16 -->
     <string name="placeholder_message">Pantalla en construcción</string>
     <string name="placeholder_logout">Cerrar sesión</string>

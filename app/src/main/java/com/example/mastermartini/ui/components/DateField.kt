@@ -24,17 +24,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mastermartini.R
+import com.example.mastermartini.util.DisplayDateFormatter
 import com.example.mastermartini.util.validation.FieldState
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-
-/** Format used to show a picked date inside a [FieldState] value. */
-val DisplayDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
 /**
  * Read-only date field that opens a Material 3 date picker. Days for which
@@ -57,10 +55,17 @@ fun DateField(
 ) {
     var showPicker by rememberSaveable { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
+    val focusManager = LocalFocusManager.current
+    // Clear focus first: otherwise closing the dialog returns focus to the last text field
+    // and the keyboard pops up again
+    val openPicker = {
+        focusManager.clearFocus()
+        showPicker = true
+    }
 
     LaunchedEffect(interactionSource) {
         interactionSource.interactions.collect { interaction ->
-            if (interaction is PressInteraction.Release) showPicker = true
+            if (interaction is PressInteraction.Release) openPicker()
         }
     }
 
@@ -74,7 +79,7 @@ fun DateField(
         interactionSource = interactionSource,
         modifier = modifier,
         extraTrailing = {
-            IconButton(onClick = { showPicker = true }) {
+            IconButton(onClick = openPicker) {
                 Icon(Icons.Outlined.CalendarMonth, contentDescription = stringResource(R.string.cd_pick_date))
             }
         },

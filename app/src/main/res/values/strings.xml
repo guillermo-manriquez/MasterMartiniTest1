@@ -94,7 +94,24 @@
     <string name="action_allow">Permitir</string>
     <string name="action_not_now">Ahora no</string>
 
-    <!-- Temporary placeholders, replaced screen by screen in T15–T16 -->
+    <!-- Contact -->
+    <string name="contact_title">Contacto</string>
+    <string name="contact_company">Master Martini Chile</string>
+    <string name="contact_call">Llamar</string>
+    <string name="contact_whatsapp">WhatsApp</string>
+    <string name="contact_map">Ver en mapa</string>
+    <string name="contact_form_header">Escríbenos</string>
+    <string name="contact_form_subtitle">Completa el formulario y se abrirá tu app de correo con el mensaje listo para enviar.</string>
+    <string name="label_name">Nombre</string>
+    <string name="label_message">Mensaje</string>
+    <string name="helper_message_count">%1$d/%2$d caracteres</string>
+    <string name="contact_submit">Enviar mensaje</string>
+    <string name="contact_email_opened">Revisa el mensaje en tu app de correo y envíalo desde ahí</string>
+    <string name="contact_no_email_app">No hay una app de correo instalada</string>
+    <string name="contact_no_app">No hay una aplicación para abrir esta acción</string>
+    <string name="contact_whatsapp_greeting">Hola, me comunico desde la app Master Martini.</string>
+
+    <!-- Temporary placeholders, replaced screen by screen in T16 -->
     <string name="placeholder_message">Pantalla en construcción</string>
     <string name="placeholder_logout">Cerrar sesión</string>
 

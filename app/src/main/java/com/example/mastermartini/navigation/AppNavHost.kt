@@ -37,6 +37,7 @@ import com.example.mastermartini.ui.screens.auth.LoginScreen
 import com.example.mastermartini.ui.screens.auth.RegisterScreen
 import com.example.mastermartini.ui.screens.catalog.CatalogScreen
 import com.example.mastermartini.ui.screens.catalog.ProductDetailScreen
+import com.example.mastermartini.ui.screens.contact.ContactScreen
 import com.example.mastermartini.ui.screens.quote.QuoteScreen
 import com.example.mastermartini.viewmodel.AppShellViewModel
 
@@ -128,7 +129,7 @@ fun AppNavHost(
                 QuoteScreen(onGoToCatalog = { navController.navigateToTab(TopLevelTab.CATALOG) })
             }
             composable<Route.Contact> {
-                PlaceholderScreen(title = stringResource(R.string.nav_contact))
+                ContactScreen()
             }
             composable<Route.Profile> {
                 PlaceholderScreen(

@@ -5,7 +5,7 @@ data class HashedPassword(val hash: String, val salt: String)
 
 /**
  * Hashes and verifies passwords so they are never stored in plain text.
- * The PBKDF2 implementation is added in T7.
+ * See [Pbkdf2PasswordHasher]; tests can pass a fake.
  */
 interface PasswordHasher {
     /** Hashes [password] with a new random salt. */

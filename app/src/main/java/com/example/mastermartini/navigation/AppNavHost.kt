@@ -21,7 +21,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
@@ -30,14 +29,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.mastermartini.R
-import com.example.mastermartini.ui.screens.PlaceholderScreen
 import com.example.mastermartini.ui.screens.auth.AuthGateScreen
 import com.example.mastermartini.ui.screens.auth.LoginScreen
 import com.example.mastermartini.ui.screens.auth.RegisterScreen
 import com.example.mastermartini.ui.screens.catalog.CatalogScreen
 import com.example.mastermartini.ui.screens.catalog.ProductDetailScreen
 import com.example.mastermartini.ui.screens.contact.ContactScreen
+import com.example.mastermartini.ui.screens.profile.ProfileScreen
 import com.example.mastermartini.ui.screens.quote.QuoteScreen
 import com.example.mastermartini.viewmodel.AppShellViewModel
 
@@ -132,11 +130,15 @@ fun AppNavHost(
                 ContactScreen()
             }
             composable<Route.Profile> {
-                PlaceholderScreen(
-                    title = stringResource(R.string.nav_profile),
-                    actions = listOf(
-                        stringResource(R.string.placeholder_logout) to { navController.navigateClearingStack(Route.Login) },
-                    ),
+                ProfileScreen(
+                    onProductClick = { id -> navController.navigate(Route.ProductDetail(productId = id)) },
+                    onGoToCatalog = { navController.navigateToTab(TopLevelTab.CATALOG) },
+                    onLoggedOut = {
+                        navController.navigateClearingStack(Route.Login)
+                        // Tab switching saved each tab's state under Catálogo; drop it so the next
+                        // user does not get this user's screens (e.g. the pre-filled contact form)
+                        navController.clearBackStack<Route.Catalog>()
+                    },
                 )
             }
         }

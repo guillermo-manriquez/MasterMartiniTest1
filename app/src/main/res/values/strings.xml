@@ -111,9 +111,16 @@
     <string name="contact_no_app">No hay una aplicación para abrir esta acción</string>
     <string name="contact_whatsapp_greeting">Hola, me comunico desde la app Master Martini.</string>
 
-    <!-- Temporary placeholders, replaced screen by screen in T16 -->
-    <string name="placeholder_message">Pantalla en construcción</string>
-    <string name="placeholder_logout">Cerrar sesión</string>
+    <!-- Profile -->
+    <string name="profile_title">Mi perfil</string>
+    <string name="profile_account">Datos de la cuenta</string>
+    <string name="profile_favorites">Mis favoritos</string>
+    <string name="profile_favorites_empty_title">Aún no tienes favoritos</string>
+    <string name="profile_favorites_empty_message">Toca el corazón en un producto para guardarlo aquí.</string>
+    <string name="profile_about">Acerca de esta app</string>
+    <string name="profile_logout">Cerrar sesión</string>
+    <string name="profile_logout_confirm_title">¿Cerrar sesión?</string>
+    <string name="profile_logout_confirm_message">Tus favoritos y cotizaciones quedan guardados en este dispositivo para la próxima vez que ingreses.</string>
 
     <!-- Bottom navigation -->
     <string name="nav_catalog">Catálogo</string>

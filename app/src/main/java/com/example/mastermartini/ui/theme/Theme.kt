@@ -31,6 +31,8 @@ private val LightColorScheme = lightColorScheme(
     surfaceContainerHighest = Color(0xFFE6E7E9),
     outline = MartiniOutline,
     outlineVariant = MartiniOutlineVariant,
+    // Used by snackbar actions on the dark snackbar; the default was Material purple
+    inversePrimary = MartiniGreenContainer,
 )
 
 @Composable

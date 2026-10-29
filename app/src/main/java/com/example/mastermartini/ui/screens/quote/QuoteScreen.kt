@@ -3,6 +3,14 @@ package com.example.mastermartini.ui.screens.quote
 import android.Manifest
 import android.content.Intent
 import android.provider.Settings
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +57,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -56,6 +65,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -86,6 +96,8 @@ import com.example.mastermartini.viewmodel.LocationEvent
 import com.example.mastermartini.viewmodel.QuoteLine
 import com.example.mastermartini.viewmodel.QuoteViewModel
 import kotlinx.coroutines.launch
+
+private const val REMOVE_MS = 250
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -190,13 +202,27 @@ fun QuoteScreen(
                 )
             } else {
                 state.lines.forEach { line ->
-                    QuoteLineCard(
-                        line = line,
-                        onQuantityChange = { viewModel.onQuantityChange(line.item.product.id, it) },
-                        onIncrement = { viewModel.increment(line) },
-                        onDecrement = { viewModel.decrement(line) },
-                        onRemove = { viewModel.removeLine(line.item.product.id) },
-                    )
+                    val productId = line.item.product.id
+                    key(productId) {
+                        // Starts visible (no entry animation); "remove" first plays the exit
+                        // animation and deletes the item from Room once it has finished
+                        val visibility = remember { MutableTransitionState(true) }
+                        if (visibility.isIdle && !visibility.currentState) {
+                            LaunchedEffect(Unit) { viewModel.removeLine(productId) }
+                        }
+                        AnimatedVisibility(
+                            visibleState = visibility,
+                            exit = shrinkVertically(tween(REMOVE_MS)) + fadeOut(tween(REMOVE_MS)),
+                        ) {
+                            QuoteLineCard(
+                                line = line,
+                                onQuantityChange = { viewModel.onQuantityChange(productId, it) },
+                                onIncrement = { viewModel.increment(line) },
+                                onDecrement = { viewModel.decrement(line) },
+                                onRemove = { visibility.targetState = false },
+                            )
+                        }
+                    }
                 }
             }
 
@@ -295,7 +321,7 @@ fun QuoteScreen(
     state.registeredRequestId?.let { requestId ->
         AlertDialog(
             onDismissRequest = viewModel::dismissConfirmation,
-            icon = { Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = SuccessGreen) },
+            icon = { SuccessCheck() },
             title = { Text(stringResource(R.string.quote_registered_title), textAlign = TextAlign.Center) },
             text = { Text(stringResource(R.string.quote_registered_message, requestId)) },
             confirmButton = {
@@ -303,6 +329,26 @@ fun QuoteScreen(
             },
         )
     }
+}
+
+/** Check mark that springs in when the request is registered. */
+@Composable
+private fun SuccessCheck() {
+    val scale = remember { Animatable(0f) }
+    LaunchedEffect(Unit) {
+        scale.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow))
+    }
+    Icon(
+        Icons.Filled.CheckCircle,
+        contentDescription = null,
+        tint = SuccessGreen,
+        modifier = Modifier
+            .size(48.dp)
+            .graphicsLayer {
+                scaleX = scale.value
+                scaleY = scale.value
+            },
+    )
 }
 
 @Composable

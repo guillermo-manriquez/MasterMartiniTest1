@@ -174,8 +174,8 @@ Shared `PermissionHandler` in `util/permissions` for both flows.
 | 4 | "Agregar a cotización" → "✓ Agregado" / "✓ Cantidad actualizada" + quote tab badge bounce | Keep |
 | 5 | NavHost slide/fade transitions; fade between tabs | Keep |
 | 6 | Catalog `animateItem()` on filter + animated chip selection | Cut 2nd |
-| 7 | Quote success dialog with check icon scaling in | Cut 3rd |
-| 8 | Quote item removal with `animateItem()` | Cut 1st |
+| 7 | Quote success dialog with check icon spring-scaling in | Cut 3rd |
+| 8 | Quote item removal: shrink + fade (`AnimatedVisibility`; the items share a scrolling `Column` with the form, so `animateItem()` does not apply) | Cut 1st |
 
 ---
 

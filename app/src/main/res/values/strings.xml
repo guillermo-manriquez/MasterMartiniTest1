@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">Master Martini</string>
+
+    <!-- Wordmark -->
+    <string name="wordmark_master">MASTER</string>
+    <string name="wordmark_martini">Martini</string>
+    <string name="wordmark_tagline">Ingredientes para panadería, pastelería y gelatería</string>
+    <string name="wordmark_content_description">Master Martini Chile</string>
+
+    <string name="disclaimer">Proyecto académico DSY1105 (Duoc UC). No afiliado oficialmente a Master Martini Chile.</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_catalog">Catálogo</string>
+    <string name="nav_quote">Cotización</string>
+    <string name="nav_contact">Contacto</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Product categories (website sections) -->
+    <string name="category_bakery_pastry">Panadería y Pastelería</string>
+    <string name="category_gelato">Gelatería</string>
+    <string name="category_food_service">Food Service</string>
+    <string name="category_retail">Retail</string>
+
+    <!-- Common actions -->
+    <string name="action_back">Volver</string>
+    <string name="action_retry">Reintentar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_accept">Aceptar</string>
+    <string name="action_open_settings">Abrir ajustes</string>
 </resources>

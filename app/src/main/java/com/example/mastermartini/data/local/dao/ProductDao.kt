@@ -10,18 +10,17 @@ import kotlinx.coroutines.flow.Flow
 interface ProductDao {
 
     /**
-     * Catalog list filtered by an optional category and a search text that
-     * matches the product name or family. An empty [query] matches everything.
+     * Catalog list, optionally limited to one category. Text search is done in
+     * ProductRepository because SQLite LIKE is not accent-insensitive.
      */
     @Query(
         """
         SELECT * FROM products
         WHERE (:category IS NULL OR category = :category)
-          AND (name LIKE '%' || :query || '%' OR family LIKE '%' || :query || '%')
         ORDER BY category, name
         """
     )
-    fun observeProducts(query: String, category: ProductCategory?): Flow<List<ProductEntity>>
+    fun observeProducts(category: ProductCategory?): Flow<List<ProductEntity>>
 
     @Query("SELECT * FROM products WHERE id = :id")
     fun observeById(id: Long): Flow<ProductEntity?>

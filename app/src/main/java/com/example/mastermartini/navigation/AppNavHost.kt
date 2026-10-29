@@ -10,13 +10,20 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -30,13 +37,27 @@ import com.example.mastermartini.ui.screens.auth.LoginScreen
 import com.example.mastermartini.ui.screens.auth.RegisterScreen
 import com.example.mastermartini.ui.screens.catalog.CatalogScreen
 import com.example.mastermartini.ui.screens.catalog.ProductDetailScreen
+import com.example.mastermartini.ui.screens.quote.QuoteScreen
+import com.example.mastermartini.viewmodel.AppShellViewModel
 
 private const val TRANSITION_MS = 300
 
 @Composable
-fun AppNavHost(navController: NavHostController = rememberNavController()) {
+fun AppNavHost(
+    navController: NavHostController = rememberNavController(),
+    shellViewModel: AppShellViewModel = viewModel(factory = AppShellViewModel.Factory),
+) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
+    val quoteItemCount by shellViewModel.quoteItemCount.collectAsStateWithLifecycle()
+
+    // Kept here, outside the bar, so the badge can still bounce after returning from a
+    // screen without the bar (e.g. adding from product detail). -1 = nothing seen yet, so a
+    // quote restored at app start does not bounce.
+    var badgeSeenCount by rememberSaveable { mutableIntStateOf(-1) }
+    LaunchedEffect(quoteItemCount) {
+        if (badgeSeenCount < 0 || quoteItemCount < badgeSeenCount) badgeSeenCount = quoteItemCount
+    }
 
     Scaffold(
         bottomBar = {
@@ -47,7 +68,9 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
             ) {
                 BottomBar(
                     currentDestination = currentDestination,
-                    quoteItemCount = 0, // connected to the draft quote in T13
+                    quoteItemCount = quoteItemCount,
+                    badgeSeenCount = badgeSeenCount,
+                    onBadgeSeen = { badgeSeenCount = it },
                     onTabSelected = { tab -> navController.navigateToTab(tab) },
                 )
             }
@@ -58,7 +81,10 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
             startDestination = Route.AuthGate,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                // Tell child imePadding() this space is already reserved, so the keyboard
+                // height is not added on top of the bottom bar
+                .consumeWindowInsets(innerPadding),
             enterTransition = { if (isBetweenTabs()) fadeIn(tween(TRANSITION_MS)) else slideIn(SlideDirection.Start) },
             exitTransition = { if (isBetweenTabs()) fadeOut(tween(TRANSITION_MS)) else slideOut(SlideDirection.Start) },
             popEnterTransition = { if (isBetweenTabs()) fadeIn(tween(TRANSITION_MS)) else slideIn(SlideDirection.End) },
@@ -99,7 +125,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
                 )
             }
             composable<Route.Quote> {
-                PlaceholderScreen(title = stringResource(R.string.nav_quote))
+                QuoteScreen(onGoToCatalog = { navController.navigateToTab(TopLevelTab.CATALOG) })
             }
             composable<Route.Contact> {
                 PlaceholderScreen(title = stringResource(R.string.nav_contact))

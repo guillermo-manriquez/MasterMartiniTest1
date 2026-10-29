@@ -1,6 +1,10 @@
 package com.example.mastermartini.navigation
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RequestQuote
@@ -17,6 +21,10 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
@@ -44,11 +52,15 @@ fun NavDestination?.isAnyTab(): Boolean = TopLevelTab.entries.any { isTab(it) }
 /**
  * @param quoteItemCount number of products in the draft quote, shown as a badge
  *   on the Cotización tab when greater than zero.
+ * @param badgeSeenCount last count the user has seen; the badge bounces when the count
+ *   is higher (kept by the caller because this bar leaves composition on hidden screens).
  */
 @Composable
 fun BottomBar(
     currentDestination: NavDestination?,
     quoteItemCount: Int,
+    badgeSeenCount: Int,
+    onBadgeSeen: (Int) -> Unit,
     onTabSelected: (TopLevelTab) -> Unit,
 ) {
     NavigationBar {
@@ -61,7 +73,7 @@ fun BottomBar(
                 icon = {
                     val icon = if (selected) tab.selectedIcon else tab.unselectedIcon
                     if (tab == TopLevelTab.QUOTE && quoteItemCount > 0) {
-                        BadgedBox(badge = { Badge { Text(quoteItemCount.toString()) } }) {
+                        BadgedBox(badge = { BouncingBadge(quoteItemCount, badgeSeenCount, onBadgeSeen) }) {
                             Icon(icon, contentDescription = null)
                         }
                     } else {
@@ -71,4 +83,23 @@ fun BottomBar(
             )
         }
     }
+}
+
+/** Badge that bounces when the count grows, so the user sees where added products went. */
+@Composable
+private fun BouncingBadge(count: Int, seenCount: Int, onSeen: (Int) -> Unit) {
+    val scale = remember { Animatable(1f) }
+    LaunchedEffect(count) {
+        if (seenCount >= 0 && count > seenCount) {
+            scale.animateTo(1.6f, tween(durationMillis = 140))
+            scale.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium))
+        }
+        onSeen(count)
+    }
+    Badge(
+        modifier = Modifier.graphicsLayer {
+            scaleX = scale.value
+            scaleY = scale.value
+        },
+    ) { Text(count.toString()) }
 }

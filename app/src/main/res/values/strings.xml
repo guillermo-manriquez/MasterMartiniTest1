@@ -60,7 +60,29 @@
     <string name="cd_add_favorite">Agregar a favoritos</string>
     <string name="cd_remove_favorite">Quitar de favoritos</string>
 
-    <!-- Temporary placeholders, replaced screen by screen in T13–T16 -->
+    <!-- Quote -->
+    <string name="quote_title">Cotización</string>
+    <string name="quote_items_header">Productos en tu cotización</string>
+    <string name="quote_empty_title">Tu cotización está vacía</string>
+    <string name="quote_empty_message">Agrega productos desde el catálogo para pedir una cotización.</string>
+    <string name="quote_go_catalog">Ir al catálogo</string>
+    <string name="quote_form_header">Datos de la solicitud</string>
+    <string name="label_quantity">Cant.</string>
+    <string name="label_business_name">Nombre de la empresa</string>
+    <string name="label_rut">RUT de la empresa</string>
+    <string name="label_delivery_date">Fecha de entrega</string>
+    <string name="label_address">Dirección de despacho</string>
+    <string name="helper_rut">Ej: 12.345.678-5</string>
+    <string name="helper_delivery_date">Desde mañana, de lunes a sábado</string>
+    <string name="quote_submit">Enviar solicitud</string>
+    <string name="quote_local_note">La solicitud se guarda en este dispositivo.</string>
+    <string name="quote_registered_title">Solicitud de cotización registrada</string>
+    <string name="quote_registered_message">Tu solicitud N° %1$d quedó registrada en este dispositivo.</string>
+    <string name="cd_decrease">Restar una unidad de %1$s</string>
+    <string name="cd_increase">Sumar una unidad de %1$s</string>
+    <string name="cd_remove_item">Quitar %1$s de la cotización</string>
+
+    <!-- Temporary placeholders, replaced screen by screen in T15–T16 -->
     <string name="placeholder_message">Pantalla en construcción</string>
     <string name="placeholder_logout">Cerrar sesión</string>
 

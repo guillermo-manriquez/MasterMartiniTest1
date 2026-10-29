@@ -27,4 +27,14 @@
     <string name="action_cancel">Cancelar</string>
     <string name="action_accept">Aceptar</string>
     <string name="action_open_settings">Abrir ajustes</string>
+
+    <!-- Form components (content descriptions) -->
+    <string name="cd_show_password">Mostrar contraseña</string>
+    <string name="cd_hide_password">Ocultar contraseña</string>
+    <string name="cd_field_valid">Campo válido</string>
+    <string name="cd_field_error">Campo con error</string>
+    <string name="cd_pick_date">Seleccionar fecha</string>
+    <string name="cd_loading">Cargando</string>
+    <string name="date_picker_title">Fecha de entrega</string>
+    <string name="date_picker_headline_empty">Elige un día</string>
 </resources>

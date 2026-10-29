@@ -17,7 +17,6 @@ interface ProductDao {
         """
         SELECT * FROM products
         WHERE (:category IS NULL OR category = :category)
-        ORDER BY category, name
         """
     )
     fun observeProducts(category: ProductCategory?): Flow<List<ProductEntity>>

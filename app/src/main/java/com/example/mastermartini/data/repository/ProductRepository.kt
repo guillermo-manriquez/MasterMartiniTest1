@@ -32,6 +32,8 @@ class RoomProductRepository(
         return productDao.observeProducts(category).map { products ->
             products
                 .filter { needle.isEmpty() || needle in it.name.normalizedForSearch() || needle in it.family.normalizedForSearch() }
+                // Website order (enum order), not the alphabetical order of the stored names
+                .sortedWith(compareBy({ it.category.ordinal }, { it.name }))
                 .map { it.toModel() }
         }
     }

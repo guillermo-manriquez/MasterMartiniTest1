@@ -27,6 +27,8 @@ import androidx.navigation.toRoute
 import com.example.mastermartini.R
 import com.example.mastermartini.ui.screens.PlaceholderScreen
 import com.example.mastermartini.ui.screens.auth.AuthGateScreen
+import com.example.mastermartini.ui.screens.auth.LoginScreen
+import com.example.mastermartini.ui.screens.auth.RegisterScreen
 
 private const val TRANSITION_MS = 300
 
@@ -73,20 +75,15 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
 
             // Auth flow (no bottom bar)
             composable<Route.Login> {
-                PlaceholderScreen(
-                    title = stringResource(R.string.title_login),
-                    actions = listOf(
-                        stringResource(R.string.placeholder_go_register) to { navController.navigate(Route.Register) },
-                        stringResource(R.string.placeholder_enter) to { navController.navigateClearingStack(Route.Catalog) },
-                    ),
+                LoginScreen(
+                    onLoggedIn = { navController.navigateClearingStack(Route.Catalog) },
+                    onGoToRegister = { navController.navigate(Route.Register) { launchSingleTop = true } },
                 )
             }
             composable<Route.Register> {
-                PlaceholderScreen(
-                    title = stringResource(R.string.title_register),
-                    actions = listOf(
-                        stringResource(R.string.placeholder_enter) to { navController.navigateClearingStack(Route.Catalog) },
-                    ),
+                RegisterScreen(
+                    onRegistered = { navController.navigateClearingStack(Route.Catalog) },
+                    onBack = { navController.popBackStack() },
                 )
             }
 

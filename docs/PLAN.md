@@ -30,7 +30,7 @@ Deferred to the EFT: sending quotes to the company (email or backend), more View
 - **DI:** manual `AppContainer` created in `MasterMartiniApp : Application`; ViewModels built with `viewModelFactory { initializer { … } }`. No Hilt.
 - **Package:** `com.example.mastermartini` (kept).
 - **SDK levels:** **minSdk 26** (raised from 24; needed by `PBKDF2WithHmacSHA256` and `java.time`), compileSdk/targetSdk 37.
-- **Stack:** Kotlin 2.2.10, AGP 9.5, Compose BOM, Material 3, Room + KSP, Navigation Compose 2.8+ with type-safe routes (kotlinx-serialization plugin), DataStore Preferences, lifecycle-viewmodel-compose / lifecycle-runtime-compose, play-services-location, material-icons-extended, Coil. Test-only: JUnit, kotlinx-coroutines-test. Update outdated `core-ktx`, `lifecycle`, `activity-compose`.
+- **Stack:** Kotlin 2.4.21 (raised from 2.2.10 in T1), AGP 9.5, Compose BOM, Material 3, Room 2.8.5 + KSP 2.3.12, Navigation Compose 2.10 with type-safe routes (kotlinx-serialization plugin), DataStore Preferences, lifecycle-viewmodel-compose / lifecycle-runtime-compose, play-services-location, material-icons-extended, Coil. Test-only: JUnit, kotlinx-coroutines-test. Update outdated `core-ktx`, `lifecycle`, `activity-compose`.
 
 ### Package structure
 

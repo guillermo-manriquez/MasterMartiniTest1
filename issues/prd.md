@@ -112,10 +112,10 @@ Personas: **Comprador** (a buyer at a bakery, gelateria, food service or retail 
 ## Implementation Decisions
 
 ### Platform and build
-- Android Studio, Kotlin 2.2.10, AGP 9.5 (built-in Kotlin support, no `kotlin-android` plugin), Gradle 9.6, compileSdk/targetSdk 37.
+- Android Studio, Kotlin 2.4.21 (raised from the template's 2.2.10 in T1: current AndroidX/kotlinx releases ship Kotlin 2.4 metadata), AGP 9.5 (built-in Kotlin support, no `kotlin-android` plugin), Gradle 9.6, compileSdk/targetSdk 37.
 - **minSdk 26** (raised from the template's 24; resolved OPEN-1). `PBKDF2WithHmacSHA256` and `java.time.LocalDate` need API 26. The rubric names no Android version; the demo runs on an emulator. Trade-off: the app cannot be installed on Android 7.x; if that is ever needed, switch back to 24 with core library desugaring and `PBKDF2WithHmacSHA1`.
 - Package `com.example.mastermartini` is kept (decided).
-- Dependencies to add: Room + KSP (version matching Kotlin 2.2.10), Navigation Compose 2.8+ with the kotlinx-serialization plugin, DataStore Preferences, `lifecycle-viewmodel-compose`, `lifecycle-runtime-compose`, `play-services-location`, `material-icons-extended`, Coil; test-only `kotlinx-coroutines-test`. Outdated `core-ktx` 1.10.1, `lifecycle` 2.6.1 and `activity-compose` 1.8.0 get updated.
+- Dependencies to add: Room 2.8.5 + KSP 2.3.12 (no `room-ktx`: it is empty since Room 2.7), Navigation Compose 2.8+ with the kotlinx-serialization plugin, DataStore Preferences, `lifecycle-viewmodel-compose`, `lifecycle-runtime-compose`, `play-services-location`, `material-icons-extended`, Coil; test-only `kotlinx-coroutines-test`. Outdated `core-ktx` 1.10.1, `lifecycle` 2.6.1 and `activity-compose` 1.8.0 get updated.
 - **The first implementation step is a clean `assembleDebug` with all dependencies added**, before any feature work. KSP/AGP 9 compatibility is the biggest technical risk.
 
 ### Architecture

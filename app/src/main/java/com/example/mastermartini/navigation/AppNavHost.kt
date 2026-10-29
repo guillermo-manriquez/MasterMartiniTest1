@@ -23,13 +23,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.example.mastermartini.R
 import com.example.mastermartini.ui.screens.PlaceholderScreen
 import com.example.mastermartini.ui.screens.auth.AuthGateScreen
 import com.example.mastermartini.ui.screens.auth.LoginScreen
 import com.example.mastermartini.ui.screens.auth.RegisterScreen
 import com.example.mastermartini.ui.screens.catalog.CatalogScreen
+import com.example.mastermartini.ui.screens.catalog.ProductDetailScreen
 
 private const val TRANSITION_MS = 300
 
@@ -92,11 +92,10 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
             composable<Route.Catalog> {
                 CatalogScreen(onProductClick = { id -> navController.navigate(Route.ProductDetail(productId = id)) })
             }
-            composable<Route.ProductDetail> { entry ->
-                val route = entry.toRoute<Route.ProductDetail>()
-                PlaceholderScreen(
-                    title = stringResource(R.string.title_product_detail) + " #${route.productId}",
-                    actions = listOf(stringResource(R.string.action_back) to { navController.popBackStack() }),
+            composable<Route.ProductDetail> {
+                ProductDetailScreen(
+                    onBack = { navController.popBackStack() },
+                    onViewQuote = { navController.navigateToTab(TopLevelTab.QUOTE) },
                 )
             }
             composable<Route.Quote> {

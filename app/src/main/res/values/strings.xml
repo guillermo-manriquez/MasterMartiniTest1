@@ -44,7 +44,23 @@
         <item quantity="other">%d productos</item>
     </plurals>
 
-    <!-- Temporary placeholders, replaced screen by screen in T12–T16 -->
+    <!-- Product detail -->
+    <string name="detail_presentation">Presentación</string>
+    <string name="detail_family">Familia</string>
+    <string name="detail_category">Categoría</string>
+    <string name="detail_price_note">Precio y despacho según cotización. Agrega el producto y envía tu solicitud desde la pestaña Cotización.</string>
+    <string name="detail_add_to_quote">Agregar a cotización</string>
+    <string name="detail_added">Agregado</string>
+    <string name="detail_quantity_updated">Cantidad actualizada</string>
+    <string name="detail_snackbar_added">Producto agregado a tu cotización</string>
+    <string name="detail_snackbar_updated">Se sumó 1 unidad en tu cotización</string>
+    <string name="detail_view_quote">Ver cotización</string>
+    <string name="detail_not_found_title">Producto no encontrado</string>
+    <string name="detail_not_found">Este producto ya no está disponible en el catálogo.</string>
+    <string name="cd_add_favorite">Agregar a favoritos</string>
+    <string name="cd_remove_favorite">Quitar de favoritos</string>
+
+    <!-- Temporary placeholders, replaced screen by screen in T13–T16 -->
     <string name="placeholder_message">Pantalla en construcción</string>
     <string name="placeholder_logout">Cerrar sesión</string>
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Profile photos: app-private storage, only shared with the camera app while it takes the photo -->
+    <files-path
+        name="profile"
+        path="profile/" />
+</paths>

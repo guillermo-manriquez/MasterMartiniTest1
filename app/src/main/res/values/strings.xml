@@ -120,6 +120,15 @@
     <string name="profile_about">Acerca de esta app</string>
     <string name="profile_logout">Cerrar sesión</string>
     <string name="profile_logout_confirm_title">¿Cerrar sesión?</string>
+    <string name="cd_profile_photo">Foto de perfil</string>
+    <string name="cd_take_profile_photo">Tomar foto de perfil</string>
+    <string name="profile_photo_saved">Foto de perfil actualizada</string>
+
+    <!-- Camera (profile photo) -->
+    <string name="camera_rationale_title">Usar la cámara</string>
+    <string name="camera_rationale_message">Master Martini usa la cámara solo para tomar tu foto de perfil. La foto se guarda en este dispositivo y no se comparte.</string>
+    <string name="camera_permanently_denied">El permiso de cámara está desactivado</string>
+    <string name="camera_no_app">No hay una app de cámara disponible</string>
     <string name="profile_logout_confirm_message">Tus favoritos y cotizaciones quedan guardados en este dispositivo para la próxima vez que ingreses.</string>
 
     <!-- Bottom navigation -->

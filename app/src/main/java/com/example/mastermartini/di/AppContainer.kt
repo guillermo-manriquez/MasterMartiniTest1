@@ -13,6 +13,8 @@ import com.example.mastermartini.data.repository.RoomUserRepository
 import com.example.mastermartini.data.repository.UserRepository
 import com.example.mastermartini.data.session.DataStoreSessionManager
 import com.example.mastermartini.data.session.SessionManager
+import com.example.mastermartini.util.camera.FileProviderPhotoStore
+import com.example.mastermartini.util.camera.ProfilePhotoStore
 import com.example.mastermartini.util.location.AndroidLocationProvider
 import com.example.mastermartini.util.location.LocationProvider
 import com.example.mastermartini.util.security.PasswordHasher
@@ -30,6 +32,7 @@ interface AppContainer {
     val productRepository: ProductRepository
     val quoteRepository: QuoteRepository
     val locationProvider: LocationProvider
+    val profilePhotoStore: ProfilePhotoStore
 }
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
@@ -51,6 +54,8 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     override val quoteRepository: QuoteRepository by lazy { RoomQuoteRepository(database.quoteDao()) }
 
     override val locationProvider: LocationProvider by lazy { AndroidLocationProvider(context) }
+
+    override val profilePhotoStore: ProfilePhotoStore by lazy { FileProviderPhotoStore(context) }
 }
 
 /** Resolves the [AppContainer] from a ViewModel factory's [CreationExtras]. */

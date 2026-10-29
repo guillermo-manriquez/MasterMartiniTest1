@@ -9,6 +9,18 @@
 
     <string name="disclaimer">Proyecto académico DSY1105 (Duoc UC). No afiliado oficialmente a Master Martini Chile.</string>
 
+    <!-- Screen titles -->
+    <string name="title_login">Iniciar sesión</string>
+    <string name="title_register">Crear cuenta</string>
+    <string name="title_product_detail">Detalle del producto</string>
+
+    <!-- Temporary placeholders, replaced screen by screen in T10–T16 -->
+    <string name="placeholder_message">Pantalla en construcción</string>
+    <string name="placeholder_go_register">Ir a crear cuenta</string>
+    <string name="placeholder_enter">Entrar</string>
+    <string name="placeholder_open_product">Ver un producto</string>
+    <string name="placeholder_logout">Cerrar sesión</string>
+
     <!-- Bottom navigation -->
     <string name="nav_catalog">Catálogo</string>
     <string name="nav_quote">Cotización</string>

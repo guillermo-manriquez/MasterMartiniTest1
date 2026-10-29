@@ -275,8 +275,11 @@ Each card: a checklist, the related branch/PR (if used), and the person who actu
 
 ## 12. Delivery checklist
 
-- [ ] `./gradlew assembleDebug` and `./gradlew test` pass on a clean clone
-- [ ] README.md: description, disclaimer, student names, features per rubric item, architecture, permissions, run steps, demo credentials, minSdk 26
+The unchecked items are for the team: they need the team, real accounts or the AVA platform.
+
+- [x] `./gradlew assembleDebug` and `./gradlew testDebugUnitTest` pass on a clean clone (32 tests)
+- [x] README.md: description, disclaimer, features per rubric item, architecture, permissions, run steps, demo credentials, minSdk 26
+- [ ] README.md: replace the placeholders (student names and roles, GitHub link, Trello link)
 - [ ] Public GitHub repo; teacher and every member have access
 - [ ] Trello board public or shared with the teacher, link in README
 - [ ] **Repo frozen before the deadline** – any change after delivery means a 1.0 for everyone

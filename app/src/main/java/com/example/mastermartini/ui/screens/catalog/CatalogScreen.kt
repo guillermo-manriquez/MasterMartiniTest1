@@ -1,6 +1,7 @@
 package com.example.mastermartini.ui.screens.catalog
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,6 +38,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -112,7 +116,15 @@ fun CatalogScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                if (!state.isLoading) {
+                if (state.isLoading) {
+                    // Opening the database can take a moment on a cold start (and the first one seeds it)
+                    item(key = "loading") {
+                        val loading = stringResource(R.string.cd_loading)
+                        Box(Modifier.fillMaxWidth().padding(top = 48.dp), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(Modifier.semantics { contentDescription = loading })
+                        }
+                    }
+                } else {
                     item(key = "count") {
                         Text(
                             text = pluralStringResource(R.plurals.catalog_count, state.products.size, state.products.size),

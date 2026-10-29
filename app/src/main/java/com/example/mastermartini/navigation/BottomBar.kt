@@ -26,7 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -66,8 +69,16 @@ fun BottomBar(
     NavigationBar {
         TopLevelTab.entries.forEach { tab ->
             val selected = currentDestination.isTab(tab)
+            val badgeDescription = if (tab == TopLevelTab.QUOTE && quoteItemCount > 0) {
+                pluralStringResource(R.plurals.cd_quote_badge, quoteItemCount, quoteItemCount)
+            } else {
+                null
+            }
             NavigationBarItem(
                 selected = selected,
+                // NavigationBarItem hides the icon (and so the badge) from screen readers when a
+                // label is shown, so the count is announced on the item: "Cotización, 2 productos…"
+                modifier = Modifier.semantics { badgeDescription?.let { stateDescription = it } },
                 onClick = { onTabSelected(tab) },
                 label = { Text(stringResource(tab.labelRes)) },
                 icon = {
